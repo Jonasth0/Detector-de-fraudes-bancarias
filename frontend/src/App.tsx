@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import api from "./services/api";
+import TransactionsPage from "./components/TransactionsPage";
 import "./App.css";
 
 interface StatusAPI {
@@ -101,7 +102,9 @@ function App() {
             <h1>{titulo}</h1>
           </div>
 
-          <div className="topbar-version">Versão 1.0.0</div>
+          <div className="topbar-version">
+            Versão {dados?.versao ?? "1.0.0"}
+          </div>
         </header>
 
         {pagina === "inicio" ? (
@@ -119,6 +122,7 @@ function App() {
             <section className="connection-card">
               <div className="connection-info">
                 <div className="connection-icon">↗</div>
+
                 <div>
                   <h3>Conexão com o servidor</h3>
 
@@ -199,26 +203,24 @@ function App() {
                 <h3>Nenhum alerta disponível</h3>
                 <p>
                   Os alertas aparecerão aqui quando as transações forem
-                  analisadas.
+                  disponibilizadas.
                 </p>
               </div>
             </section>
           </div>
+        ) : pagina === "transacoes" ? (
+          <div className="page-content">
+            <TransactionsPage transactions={[]} />
+          </div>
         ) : (
           <div className="page-content">
             <section className="empty-page">
-              <div className="empty-icon">
-                {pagina === "transacoes" ? "⇄" : "⚠"}
-              </div>
-              <h2>
-                {pagina === "transacoes"
-                  ? "Lista de transações"
-                  : "Transações suspeitas"}
-              </h2>
+              <div className="empty-icon">⚠</div>
+              <h2>Transações suspeitas</h2>
               <p>
-                Esta área será desenvolvida na próxima etapa, quando
-                integraremos os dados do sistema.
+                Esta área será desenvolvida em uma próxima etapa.
               </p>
+
               <button
                 className="back-button"
                 onClick={() => mudarPagina("inicio")}
