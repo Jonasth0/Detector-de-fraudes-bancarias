@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from fraud_detection import (
@@ -60,9 +60,23 @@ def criterios():
 
 
 @app.get("/transacoes")
-def listar_transacoes():
-    """Lista todas as transações com a marcação e seus motivos."""
+def listar_transacoes(
+    tipo: str | None = Query(default=None),
+    canal: str | None = Query(default=None),
+    marcada: bool | None = Query(default=None),
+):
+    """Lista transações com filtros opcionais."""
     dados = carregar_transacoes_classificadas()
+
+    if tipo:
+        dados = dados[dados["tipo"].str.upper() == tipo.upper()]
+
+    if canal:
+        dados = dados[dados["canal"].str.upper() == canal.upper()]
+
+    if marcada is not None:
+        dados = dados[dados["marcada"] == marcada]
+
     return para_resposta_api(dados)
 
 
