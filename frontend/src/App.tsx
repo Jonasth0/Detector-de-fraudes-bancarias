@@ -6,10 +6,13 @@ import "./App.css";
 interface StatusAPI {
   status: string;
   sistema: string;
-  versao: string;
+  versao?: string;
 }
 
+type Pagina = "inicio" | "transacoes" | "suspeitas";
+
 function App() {
+  const [pagina, setPagina] = useState<Pagina>("inicio");
   const [dados, setDados] = useState<StatusAPI | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
@@ -30,64 +33,203 @@ function App() {
     verificarAPI();
   }, []);
 
+  function mudarPagina(novaPagina: Pagina) {
+    setPagina(novaPagina);
+  }
+
+  const titulo =
+    pagina === "inicio"
+      ? "Visão geral"
+      : pagina === "transacoes"
+        ? "Todas as transações"
+        : "Transações suspeitas";
+
   return (
-    <main className="dashboard">
-      <header className="header">
-        <div>
-          <h1>Detector de Fraudes</h1>
-          <p>Sistema de monitoramento de transações bancárias</p>
+    <div className="app-container">
+      <aside className="sidebar">
+        <div className="logo">
+          <div className="logo-icon">D</div>
+          <div>
+            <h2>Detector</h2>
+            <span>Fraudes Bancárias</span>
+          </div>
         </div>
 
-        <span className="version">v1.0.0</span>
-      </header>
+        <div className="menu-title">MENU PRINCIPAL</div>
 
-      <section className="welcome">
-        <h2>Painel de controle</h2>
-        <p>
-          Bem-vindo ao sistema de análise de transações bancárias.
-        </p>
-      </section>
+        <nav className="menu">
+          <button
+            className={pagina === "inicio" ? "menu-item active" : "menu-item"}
+            onClick={() => mudarPagina("inicio")}
+          >
+            <span className="menu-icon">⌂</span>
+            Visão geral
+          </button>
 
-      <section className="status-card">
-        <div>
-          <h3>Estado do sistema</h3>
+          <button
+            className={
+              pagina === "transacoes" ? "menu-item active" : "menu-item"
+            }
+            onClick={() => mudarPagina("transacoes")}
+          >
+            <span className="menu-icon">⇄</span>
+            Todas as transações
+          </button>
 
-          {carregando ? (
-            <p>Verificando conexão...</p>
-          ) : erro ? (
-            <p className="offline">● Backend desconectado</p>
-          ) : (
-            <p className="online">● Backend conectado</p>
-          )}
+          <button
+            className={
+              pagina === "suspeitas" ? "menu-item active" : "menu-item"
+            }
+            onClick={() => mudarPagina("suspeitas")}
+          >
+            <span className="menu-icon">⚠</span>
+            Suspeitas
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
+          <span className="footer-dot"></span>
+          Sistema de monitoramento
+          <small>Projeto acadêmico</small>
         </div>
+      </aside>
 
-        <div className="status-icon">↗</div>
-      </section>
+      <main className="main-content">
+        <header className="topbar">
+          <div>
+            <span className="breadcrumb">Detector de Fraudes /</span>
+            <h1>{titulo}</h1>
+          </div>
 
-      <section className="info-grid">
-        <article className="info-card">
-          <span>API</span>
-          <h3>{dados?.status === "online" ? "Online" : "--"}</h3>
-          <p>Conexão com o servidor</p>
-        </article>
+          <div className="topbar-version">Versão 1.0.0</div>
+        </header>
 
-        <article className="info-card">
-          <span>Versão</span>
-          <h3>{dados?.versao ?? "--"}</h3>
-          <p>Versão da aplicação</p>
-        </article>
+        {pagina === "inicio" ? (
+          <div className="page-content">
+            <section className="welcome">
+              <div>
+                <h2>Bem-vindo ao painel!</h2>
+                <p>
+                  Acompanhe as transações bancárias e possíveis atividades
+                  suspeitas.
+                </p>
+              </div>
+            </section>
 
-        <article className="info-card">
-          <span>Transações</span>
-          <h3>--</h3>
-          <p>Aguardando carregamento dos dados</p>
-        </article>
-      </section>
+            <section className="connection-card">
+              <div className="connection-info">
+                <div className="connection-icon">↗</div>
+                <div>
+                  <h3>Conexão com o servidor</h3>
 
-      <footer>
-        Detector de Fraudes Bancárias · Projeto acadêmico
-      </footer>
-    </main>
+                  {carregando ? (
+                    <p className="connection-loading">
+                      Verificando conexão...
+                    </p>
+                  ) : erro ? (
+                    <p className="connection-error">
+                      ● Backend desconectado
+                    </p>
+                  ) : (
+                    <p className="connection-online">
+                      ● Backend conectado
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <span className="connection-label">
+                {carregando ? "Verificando" : erro ? "Offline" : "Online"}
+              </span>
+            </section>
+
+            <section className="section-heading">
+              <div>
+                <h2>Resumo das transações</h2>
+                <p>Visão geral das movimentações analisadas.</p>
+              </div>
+            </section>
+
+            <section className="stats-grid">
+              <article className="stat-card">
+                <div className="stat-top">
+                  <span>Total de transações</span>
+                  <div className="stat-icon blue">⇄</div>
+                </div>
+                <h3>--</h3>
+                <p>Aguardando os dados</p>
+              </article>
+
+              <article className="stat-card">
+                <div className="stat-top">
+                  <span>Transações normais</span>
+                  <div className="stat-icon green">✓</div>
+                </div>
+                <h3>--</h3>
+                <p>Movimentações regulares</p>
+              </article>
+
+              <article className="stat-card">
+                <div className="stat-top">
+                  <span>Transações suspeitas</span>
+                  <div className="stat-icon red">!</div>
+                </div>
+                <h3>--</h3>
+                <p>Precisam de atenção</p>
+              </article>
+            </section>
+
+            <section className="recent-section">
+              <div className="section-heading">
+                <div>
+                  <h2>Alertas recentes</h2>
+                  <p>Transações que precisam de atenção.</p>
+                </div>
+
+                <button
+                  className="view-button"
+                  onClick={() => mudarPagina("suspeitas")}
+                >
+                  Ver suspeitas →
+                </button>
+              </div>
+
+              <div className="empty-state">
+                <div className="empty-icon">⌕</div>
+                <h3>Nenhum alerta disponível</h3>
+                <p>
+                  Os alertas aparecerão aqui quando as transações forem
+                  analisadas.
+                </p>
+              </div>
+            </section>
+          </div>
+        ) : (
+          <div className="page-content">
+            <section className="empty-page">
+              <div className="empty-icon">
+                {pagina === "transacoes" ? "⇄" : "⚠"}
+              </div>
+              <h2>
+                {pagina === "transacoes"
+                  ? "Lista de transações"
+                  : "Transações suspeitas"}
+              </h2>
+              <p>
+                Esta área será desenvolvida na próxima etapa, quando
+                integraremos os dados do sistema.
+              </p>
+              <button
+                className="back-button"
+                onClick={() => mudarPagina("inicio")}
+              >
+                Voltar à visão geral
+              </button>
+            </section>
+          </div>
+        )}
+      </main>
+    </div>
   );
 }
 
